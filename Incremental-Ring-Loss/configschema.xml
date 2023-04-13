@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+  <Groups>
+    <Group name="">
+      <Property name="NumRings" type="int" defaultvalue="20" display="Number of Rings">
+        <HelpText>How many rings to decrement from the player when hit.</HelpText>
+      </Property>
+    </Group>
+  </Groups>
+</ConfigSchema>
