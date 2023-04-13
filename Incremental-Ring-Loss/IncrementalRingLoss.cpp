@@ -1,8 +1,10 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
-
+#include "IniFile.hpp"
 
 TaskFunc(Tobitiri, 0x44FD10);
+
+int numRings; // maximum number of rings to lose (read from config)
 
 void __cdecl DamegeRingScatter_custom(unsigned __int8 pno)
 {
@@ -17,9 +19,9 @@ void __cdecl DamegeRingScatter_custom(unsigned __int8 pno)
     rings = GetRings();
     if (!pno)
     {
-        if (rings > 20)
+        if (rings > numRings) // compare current lost rings to maximum lost rings
         {
-            rings = 20;
+            rings = numRings;
         LABEL_4:
 
 
@@ -77,22 +79,15 @@ void __cdecl DamegeRingScatter_custom(unsigned __int8 pno)
 
 extern "C"
 {
-	__declspec(dllexport) void Init()
+	__declspec(dllexport) void __cdecl Init(const char* path, const HelperFunctions& helperFunctions)
 	{
-		WriteCall((int*)0x45E664, DamegeRingScatter_custom);
-		WriteCall((int*)0x4780D3, DamegeRingScatter_custom);
-		WriteCall((int*)0x481519, DamegeRingScatter_custom);
-		WriteCall((int*)0x48892E, DamegeRingScatter_custom);
-		WriteCall((int*)0x48E70D, DamegeRingScatter_custom);
-		WriteCall((int*)0x496FFE, DamegeRingScatter_custom);
-		WriteCall((int*)0x799D24, DamegeRingScatter_custom);
-
-
+	const IniFile* config = new IniFile(std::string(path) + "\\config.ini"); // read the config file
+	numRings = config->getInt("", "NumRings", 20); // get the number of rings to lose
+	WriteJump((int*)0x4506F0, DamegeRingScatter_custom); // write jump to the original function pointer fixes a crash with newer bettersadx versions
+	delete config;
 	}
 
-
-
-	__declspec(dllexport) ModInfo SADXModInfo = { 11 };
+	__declspec(dllexport) ModInfo SADXModInfo = { ModLoaderVer };
 
 }
 
